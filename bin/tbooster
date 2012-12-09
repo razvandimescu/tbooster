@@ -1,3 +1,7 @@
 #!/usr/bin/env ruby
-
 require 'tbooster'
+if !Tbooster.listeners_loaded?
+  Tbooster.start_listener
+end
+
+Tbooster.send(ARGV)
