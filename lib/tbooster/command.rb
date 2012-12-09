@@ -2,12 +2,10 @@ class Command
   attr_accessor :file, :args
 
   def self.get(arg)
-    return if arg.nil?
-    args = arg.gsub("\n","").split(':')
+    args = arg.gsub("\n","").split(' ')
 
     if args.length < 2
-      puts "invalid command #{args}"
-      return
+      return InvalidCommand.new
     end
 
     if(args[0] == 'reload' || args[0] == "run")

@@ -1,7 +1,14 @@
 #!/usr/bin/env ruby
 require 'tbooster'
+
+if !Tbooster.runned_from_rails_root?
+  puts "must be in rails root"
+  exit
+end
+
 if !Tbooster.listeners_loaded?
-  Tbooster.start_listener
+  Tbooster.kill_zombies_and_cleanup
+  Tbooster.start_listeners
 end
 
 Tbooster.send(ARGV)
