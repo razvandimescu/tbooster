@@ -36,7 +36,7 @@ class Tbooster
     processes_exist
   end
 
-  def self.kill_zombies_and_cleanup
+  def self.close_all_and_cleanup
     %x( rm -f #{pipe} ) if File.exists?(pipe)
     if File.exists?(pid)
       kill_opened_processes
@@ -56,15 +56,13 @@ class Tbooster
 
   def self.command_listener
     fork do
-      #puts 'starting testing environment'
-      #require 'test/test_helper'
-      #puts 'loaded testing environment'
+      puts 'starting testing environment'
+      require 'test/test_helper'
+      puts 'loaded testing environment'
       File.open(pid, "a") { |f| f<<" #{Process.pid}" }
       input = File.open(pipe, "r+")
       while true do
-        cmd = input.gets
-        puts "ete na #{cmd} command"
-        cmd = Command.get(cmd)
+        cmd = Command.get(input.gets)
 
         begin
           cmd.run
@@ -104,19 +102,25 @@ class Tbooster
   def self.send(args)
     unless File.exist?(pipe)
       %x( mkfifo #{pipe} )
-      puts "created pipe"
     end
 
     if args.length > 0
       output = open(pipe, "w+")
       output.puts "run #{args.join(' ')}"
       output.flush
+    else
+      puts "tbooster is already loaded"
     end
+  end
+
+  def self.reload
+    Tbooster.close_all_and_cleanup
+    Tbooster.start_listeners
   end
 end
 
 require 'tbooster/command'
 require 'tbooster/commands/invalid'
-require 'tbooster/commands/reload_files'
+require 'tbooster/commands/reload_file'
 require 'tbooster/commands/test_runner'
 

@@ -7,13 +7,20 @@ if !Tbooster.runned_from_rails_root?
 end
 
 if ARGV && ARGV[0] == "reload"
-  Tbooster.kill_opened_processes
+  Tbooster.reload
+  exit
+end
+
+if ARGV && ARGV[0] == "exit"
+  puts "tbooster shutting down"
+  Tbooster.close_all_and_cleanup
+  exit
 end
 
 if !Tbooster.listeners_loaded?
-  Tbooster.kill_zombies_and_cleanup
+  Tbooster.close_all_and_cleanup
   Tbooster.send(ARGV)
-  Tbooster.start_listeners
+  Tbooster.start_listeners #listener needs the pipe which is created by the send command
 else
   Tbooster.send(ARGV)
 end
