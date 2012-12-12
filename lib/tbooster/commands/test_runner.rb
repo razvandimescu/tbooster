@@ -1,5 +1,5 @@
 class TestRunnerCommand < Command
-  def initialize(file, args)
+ def initialize(file, args)
     self.file = file
     self.args = args
   end

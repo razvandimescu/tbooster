@@ -5,11 +5,11 @@ class Tbooster
   end
 
   def self.pid
-    "tmp/tbooster.pid"
+    "#{File.expand_path(Dir.pwd)}/tmp/tbooster.pid"
   end
 
   def self.pipe
-    "tmp/tbooster_pipe"
+    "#{File.expand_path(Dir.pwd)}/tmp/tbooster_pipe"
   end
 
   def self.listeners_loaded?
@@ -37,9 +37,15 @@ class Tbooster
   end
 
   def self.kill_zombies_and_cleanup
-      %x( rm -f #{pipe} )
-      %x( kill -9 `cat #{pid}` )
+    %x( rm -f #{pipe} ) if File.exists?(pipe)
+    if File.exists?(pid)
+      kill_opened_processes
       %x( rm -f #{pid} )
+    end
+  end
+
+  def self.kill_opened_processes
+    %x( kill -9 `cat #{pid}` ) 
   end
 
   def self.start_listeners
@@ -50,14 +56,15 @@ class Tbooster
 
   def self.command_listener
     fork do
-      puts 'starting testing environment'
-      require 'test/test_helper'
-      puts 'loaded testing environment'
+      #puts 'starting testing environment'
+      #require 'test/test_helper'
+      #puts 'loaded testing environment'
       File.open(pid, "a") { |f| f<<" #{Process.pid}" }
-
-      input = open(pipe, "r+")
+      input = File.open(pipe, "r+")
       while true do
-        cmd = Command.get(input.gets) #read is blocked until new content is added on the pipe
+        cmd = input.gets
+        puts "ete na #{cmd} command"
+        cmd = Command.get(cmd)
 
         begin
           cmd.run
@@ -66,6 +73,8 @@ class Tbooster
           puts "Stack: #{e.backtrace}"
         end
       end
+
+      puts "closed command listener process"
     end
   end
 
@@ -80,22 +89,27 @@ class Tbooster
       notifier = INotify::Notifier.new
 
       notifier.watch("./", :modify, :recursive) do |event|
-        output.puts "reload:#{event.absolute_name}"
-        output.flush
+        if ReloadFileCommand.is_reloadable_file(event.absolute_name)
+          output.puts "reload_file #{event.absolute_name}"
+          output.flush
+        end
       end
 
       notifier.run
+      puts "closed watcher"
+
     end
   end
 
   def self.send(args)
     unless File.exist?(pipe)
       %x( mkfifo #{pipe} )
+      puts "created pipe"
     end
 
     if args.length > 0
-      output = open(pipe, "w+") # the w+ means we don't block
-      output.puts args.join(" ")
+      output = open(pipe, "w+")
+      output.puts "run #{args.join(' ')}"
       output.flush
     end
   end
@@ -103,6 +117,6 @@ end
 
 require 'tbooster/command'
 require 'tbooster/commands/invalid'
-require 'tbooster/commands/reload'
+require 'tbooster/commands/reload_files'
 require 'tbooster/commands/test_runner'
 

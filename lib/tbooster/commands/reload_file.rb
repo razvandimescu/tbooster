@@ -9,7 +9,7 @@ class ReloadFileCommand < Command
   end
 
   def run
-    return if !is_reloadable_file
+    return if !ReloadFileCommand.is_reloadable_file(file)
 
     if to_reload[file] == nil
       reload
@@ -28,8 +28,9 @@ class ReloadFileCommand < Command
     load file
   end
 
-  def is_reloadable_file
+  def self.is_reloadable_file(file)
     return true if (file =~ /app\/(models|controllers|helpers)\/(.*)\.rb$/)
+    return true if (file =~ /lib\/(.*)\.rb$/)
 
     #views must be watched too :(
     #return file =~ /app\/views\/(.*)(\.rhtml|\.html.erb|\.rjs)$/

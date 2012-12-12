@@ -8,20 +8,16 @@ class Command
       return InvalidCommand.new
     end
 
-    if(args[0] == 'reload' || args[0] == "run")
-      test_args = args[1].split(' ')
+    cmd = args[0]
+    file = args[1]
 
-      cmd = args[0]
-      file = test_args[0]
-      args = test_args[1..-1] || []
-
-      case cmd
-        when 'reload'
-          return ReloadFileCommand.new(file)
-        when 'run'
-          return TestRunnerCommand.new(file, test_args)
-      end
+    case cmd
+      when 'reload_file'
+        return ReloadFileCommand.new(file)
+      when 'run'
+        return TestRunnerCommand.new(file, args[1..-1] || [])
     end
+
 
     return Command.new
   end

@@ -6,9 +6,15 @@ if !Tbooster.runned_from_rails_root?
   exit
 end
 
-if !Tbooster.listeners_loaded?
-  Tbooster.kill_zombies_and_cleanup
-  Tbooster.start_listeners
+if ARGV && ARGV[0] == "reload"
+  Tbooster.kill_opened_processes
 end
 
-Tbooster.send(ARGV)
+if !Tbooster.listeners_loaded?
+  Tbooster.kill_zombies_and_cleanup
+  Tbooster.send(ARGV)
+  Tbooster.start_listeners
+else
+  Tbooster.send(ARGV)
+end
+
