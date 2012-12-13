@@ -15,7 +15,6 @@ class TestRunnerCommand < Command
     fork do
       ActiveRecord::Base.establish_connection ENV['RAILS_ENV']
 
-      puts "running: #{file}"
       ARGV.replace(args)
       require(file.gsub(".rb", ""))
 

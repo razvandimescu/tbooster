@@ -80,20 +80,15 @@ class Tbooster
     fork do
       File.open(pid, "a") { |f| f<< " #{Process.pid}" }
 
-      require 'rb-inotify'
-
+      require 'rubygems'
+      require 'listen'
       output = open(pipe, "w+")
 
-      notifier = INotify::Notifier.new
-
-      notifier.watch("./", :modify, :recursive) do |event|
-        if ReloadFileCommand.is_reloadable_file(event.absolute_name)
-          output.puts "reload_file #{event.absolute_name}"
-          output.flush
-        end
+      Listen.to('./', :filter => ReloadFileCommand.watchable_file) do |modified, added, removed|
+        output.puts "reload_file #{modified || added}"
+        output.flush
       end
 
-      notifier.run
       puts "closed watcher"
 
     end
@@ -108,8 +103,6 @@ class Tbooster
       output = open(pipe, "w+")
       output.puts "run #{args.join(' ')}"
       output.flush
-    else
-      puts "tbooster is already loaded"
     end
   end
 

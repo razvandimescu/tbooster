@@ -29,12 +29,12 @@ class ReloadFileCommand < Command
   end
 
   def self.is_reloadable_file(file)
-    return true if (file =~ /app\/(models|controllers|helpers)\/(.*)\.rb$/)
-    return true if (file =~ /lib\/(.*)\.rb$/)
-
-    #views must be watched too :(
-    #return file =~ /app\/views\/(.*)(\.rhtml|\.html.erb|\.rjs)$/
+    return true if (file =~ watchable_file)
     return false
+  end
+
+  def self.watchable_file
+    /((app\/(models|controllers|helpers))|lib)\/(.*)\.rb$/
   end
 end
 
