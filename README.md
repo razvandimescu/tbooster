@@ -5,7 +5,9 @@ Runs unit tests faster by not reloading the testing environment every time you'r
 
 Usage:
 ---------------
-replace `ruby` with `tbooster` when running tests:
+gem install tbooster
+
+when running tests -> replace `ruby` with `tbooster`:
 
 tbooster test/unit/users.rb
 
