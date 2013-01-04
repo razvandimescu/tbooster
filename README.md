@@ -27,7 +27,7 @@ Processing commands:
 - when a file was changed the command runner process loads that file again so that we have the testing environment up to date with the latest code changes.
 - when a `run test` command was received we fork the process that holds the most recent testing environment and require the test file that needs to be runned
 
-Isses:
+Issues:
 -------
 
 1. When changing branches in your repository if too many files were changes ree throws an error closing the process that holds the testing environment therefore we'll have to start it again
