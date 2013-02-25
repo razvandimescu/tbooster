@@ -10,15 +10,12 @@ class TestRunnerCommand < Command
       return
     end
     
-    test_start = Time.now
-
     fork do
       ActiveRecord::Base.establish_connection ENV['RAILS_ENV']
 
       ARGV.replace(args)
-      require(file.gsub(".rb", ""))
-
-      test_end = Time.now
+      file_to_run = file.gsub(".rb", "").gsub("#{Dir.pwd}", "")
+      require "#{Dir.pwd}/#{file_to_run}"
     end
   end
 

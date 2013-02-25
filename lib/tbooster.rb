@@ -57,7 +57,7 @@ class Tbooster
   def self.command_listener
     fork do
       puts 'starting testing environment'
-      require 'test/test_helper'
+      require "#{Dir.pwd}/test/test_helper"
       puts 'loaded testing environment'
       File.open(pid, "a") { |f| f<<" #{Process.pid}" }
       input = File.open(pipe, "r+")
