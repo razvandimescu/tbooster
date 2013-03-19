@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = "tbooster"
-  s.version     = "0.2.2"
-  s.date        = "2012-12-07"
+  s.version     = "0.2.3"
+  s.date        = "2013-03-19"
   s.summary     = "Test booster"
   s.description = "Runs unit tests faster by not reloading the testing environment every time"
   s.authors     = ["Razvan Dimescu"]

@@ -85,8 +85,10 @@ class Tbooster
       output = open(pipe, "w+")
 
       Listen.to('./', :filter => ReloadFileCommand.watchable_file) do |modified, added, removed|
-        output.puts "reload_file #{modified || added}"
-        output.flush
+        [modified || added].flatten.each do |file|
+          output.puts "reload_file #{file}"
+          output.flush
+        end
       end
 
       puts "closed watcher"
